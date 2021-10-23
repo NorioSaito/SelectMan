@@ -1,0 +1,4 @@
+PySimpleGUI
+selenium
+# バージョンを Chrome に合わせる
+chromedriver-binary==95.0.4638.*

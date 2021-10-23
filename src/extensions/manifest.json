@@ -1,0 +1,47 @@
+{
+  "name"        : "らくらく物出しロボ(β版)本番",
+  "description" : "クリックしたページの物件情報を自動で入力します。",
+  "version"     : "0.5",
+  "icons"       : {
+    "16"  : "img/16.png",
+    "32"  : "img/32.png",
+    "48"  : "img/48.png",
+    "128" : "img/128.png"
+  },
+  "manifest_version" : 2,
+  "background"       : {
+    "page"           : "/html/background.html",
+    "persistent"     : false
+  },
+  "content_security_policy" : "script-src 'self' https://cloud.ielove.jp https://kimaroom.jp https://img4.athome.jp; object-src 'self'",
+  "content_scripts"         : [
+    {
+      "matches" : [
+        "http://*/*",
+        "https://*/*",
+        "file:///*"
+      ],
+      "js"      : [
+        "/js/jquery.js",
+        "/js/content.js"
+      ]
+    }
+  ],
+  "web_accessible_resources" : [
+    "css/content.css"
+  ],
+  "browser_action"  : {
+    "default_icon"  : "img/19.png",
+    "default_title" : "らくらく物出しロボ(β版)"
+  },
+  "options_page" : "html/setting.html",
+  "permissions"  : [
+    "clipboardRead",
+    "contextMenus",
+    "tabs",
+    "activeTab",
+    "storage",
+    "https://img4.athome.jp/*",
+    "https://kimaroom.jp/s3/rental/housing/*"
+  ]
+}
