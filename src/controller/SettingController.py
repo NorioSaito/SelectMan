@@ -8,6 +8,9 @@ class SettingController():
         ielove_setting = util.get_ielove_auth()
         ATBB_setting = util.get_ATBB_auth()
         license_key = util.get_license_key()
+        extension = util.get_extension_info()
+        probability = util.get_probability()
+
         self.__layout = [
             [
                 sg.TabGroup([[
@@ -18,9 +21,14 @@ class SettingController():
                     sg.Tab('ATBB', [
                         [sg.Text('ユーザID', size=(10, 1)), sg.Input(key='ATBB_userid', default_text=ATBB_setting['user_id'], size=(100,))],
                         [sg.Text('パスワード', size=(10, 1)), sg.Input(key='ATBB_password', default_text=ATBB_setting['password'], size=(100,))],
+                        [sg.Text('ランダム操作閾値', size=(10, 1)), sg.Input(key='ATBB_probability', default_text=probability, size=(100,))],
                     ]),
                     sg.Tab('物出しロボ', [
                         [sg.Text('マシンキー', size=(10, 1)), sg.Input(key='license_key', default_text=license_key, size=(100,))]
+                    ]),
+                    sg.Tab('拡張機能', [
+                        [sg.Text('パス', size=(10, 1)), sg.Input(key="extension_path", default_text=extension['path'], size=(100,))],
+                        [sg.Text('オプションURL', size=(10, 1)), sg.Input(key="option_url", default_text=extension['option_url'], size=(100,))],
                     ])
                 ]])
             ],
@@ -45,13 +53,6 @@ class SettingController():
 
     def save(self, values):
         self.__logger.info('save settings')
-        settings = {
-            'ielove_userid': values['ielove_userid'],
-            'ielove_password': values['ielove_password'],
-            'ATBB_user_id': values['ATBB_userid'],
-            'ATBB_password': values['ATBB_password'],
-            'license_key': values['license_key']
-        }
         
         service = SettingsService.SettingsService(self.__logger)
         result = service.seve_settings(values)

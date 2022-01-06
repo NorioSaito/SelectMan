@@ -1,4 +1,5 @@
 import PySimpleGUI as sg
+
 from commons import constants
 from servicies.CopyAutomatorService import CopyAutomatorService
 from controller.SettingController import SettingController
@@ -23,7 +24,7 @@ class MainController:
             self.__logger.error(constants.ERROR_MSG['E100'])
 
         while True:
-            event, values = self.__window.read()
+            event, _ = self.__window.read()
             
             if event == sg.WIN_CLOSED or event == 'Close':
                 self.__output('終了します。', 'green')
@@ -34,7 +35,6 @@ class MainController:
                 self.execute()
             elif event == 'settings':
                 self.open_setting()
-                
 
         self.__window.close()
 

@@ -13,6 +13,9 @@ class SettingsService:
             settings['ATBB']['user_id'] = values['ATBB_userid']
             settings['ATBB']['password'] = values['ATBB_password']
             settings['license_key'] = values['license_key']
+            settings['extension']['path'] = values['extension_path']
+            settings['extension']['option_url'] = values['option_url']
+            settings['probability'] = values['ATBB_probability']
 
             with open(constants.SETTINGS_PATH, 'w', encoding='utf-8') as f:
                 json.dump(settings, f, indent=4)

@@ -1,4 +1,5 @@
 PySimpleGUI
 selenium
+pyautogui
 # バージョンを Chrome に合わせる
-chromedriver-binary==95.0.4638.*
+# chromedriver-binary==95.0.4638.*
