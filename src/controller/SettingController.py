@@ -6,10 +6,9 @@ from servicies import SettingsService
 class SettingController():
     def __init__(self, logger):
         ielove_setting = util.get_ielove_auth()
-        ATBB_setting = util.get_ATBB_auth()
+        ATBB_setting = util.get_ATBB_settings()
         license_key = util.get_license_key()
         extension = util.get_extension_info()
-        probability = util.get_probability()
 
         self.__layout = [
             [
@@ -21,7 +20,7 @@ class SettingController():
                     sg.Tab('ATBB', [
                         [sg.Text('ユーザID', size=(10, 1)), sg.Input(key='ATBB_userid', default_text=ATBB_setting['user_id'], size=(100,))],
                         [sg.Text('パスワード', size=(10, 1)), sg.Input(key='ATBB_password', default_text=ATBB_setting['password'], size=(100,))],
-                        [sg.Text('ランダム操作閾値', size=(10, 1)), sg.Input(key='ATBB_probability', default_text=probability, size=(100,))],
+                        [sg.Text('検索条件名', size=(10, 1)), sg.Input(key='ATBB_search_condition', default_text=ATBB_setting['search_condition'], size=(100,))],
                     ]),
                     sg.Tab('物出しロボ', [
                         [sg.Text('マシンキー', size=(10, 1)), sg.Input(key='license_key', default_text=license_key, size=(100,))]
