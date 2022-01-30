@@ -133,13 +133,15 @@ class CopyAutomatorService():
             self.output_log_info('ATTB の検索条件設定')
             # 掲載可物件の検索条件を探す
             # ページネーション数を取得
-            page_element = self.wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, 'body > table > tbody > tr:nth-child(3) > td > table > tbody > tr:nth-child(1) > td:nth-child(3) > form:nth-child(68) > table:nth-child(8) > tbody > tr > td:nth-child(1) > span:nth-child(1)')))
+            page_element = self.wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, 'body > table > tbody > tr:nth-child(3) > td > table > tbody > tr:nth-child(1) > td:nth-child(3) > form:nth-child(70) > table:nth-child(8) > tbody > tr > td:nth-child(1) > span:nth-child(1)')))
             page = int(page_element.text)
 
             # 使用する検索条件を設定ファイルから取得
             ATBB_settings = util.get_ATBB_settings()
             search_condition = ATBB_settings['search_condition']
+            min_image_count = min_image_count = ATBB_settings['image_count']
             self.output_log_info(f'今回使用する検索条件 = {search_condition}')
+            self.output_log_info(f'今回の最低画像点数 = {min_image_count}')
 
             # ページネーションごとに保存済み検索条件のリストを取得
             end_flg = False # 掲載可物件の検索結果に遷移済みかのフラグ
@@ -219,9 +221,9 @@ class CopyAutomatorService():
                     except Exception as e:
                         self.output_log_error('画像点数の取得で予期せぬエラーが発生しました。')
                         continue
-
+                    
                     # 画像点数が 8 以上なら詳細ボタンクリック
-                    if image_count > 7:
+                    if image_count >= int(min_image_count):
                         detail_btn = self.wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, '#shosai_' + str(j))))
                         detail_btn.click()
 

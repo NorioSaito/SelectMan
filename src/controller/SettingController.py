@@ -21,6 +21,7 @@ class SettingController():
                         [sg.Text('ユーザID', size=(10, 1)), sg.Input(key='ATBB_userid', default_text=ATBB_setting['user_id'], size=(100,))],
                         [sg.Text('パスワード', size=(10, 1)), sg.Input(key='ATBB_password', default_text=ATBB_setting['password'], size=(100,))],
                         [sg.Text('検索条件名', size=(10, 1)), sg.Input(key='ATBB_search_condition', default_text=ATBB_setting['search_condition'], size=(100,))],
+                        [sg.Text('画像点数', size=(10, 1)), sg.Input(key='ATBB_image_count', default_text=ATBB_setting['image_count'], size=(100,))],
                     ]),
                     sg.Tab('物出しロボ', [
                         [sg.Text('マシンキー', size=(10, 1)), sg.Input(key='license_key', default_text=license_key, size=(100,))]

@@ -13,6 +13,7 @@ class SettingsService:
             settings['ATBB']['user_id'] = values['ATBB_userid']
             settings['ATBB']['password'] = values['ATBB_password']
             settings['ATBB']['search_condition'] = values['ATBB_search_condition']
+            settings['ATBB']['image_count'] = values['ATBB_image_count']
             settings['license_key'] = values['license_key']
             settings['extension']['path'] = values['extension_path']
             settings['extension']['option_url'] = values['option_url']
