@@ -32,7 +32,7 @@ class CopyAutomatorService():
 
         # 明示的な待機を設定
         self.wait = WebDriverWait(self.driver, 10)
-        self.long_wait = WebDriverWait(self.driver, 30)
+        self.long_wait = WebDriverWait(self.driver, 60)
 
 
     def auth_extension(self):
