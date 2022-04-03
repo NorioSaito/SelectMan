@@ -308,7 +308,7 @@ class CopyAutomatorService():
         # コンテキストメニューから物出しロボを起動
         webdriver.ActionChains(self.driver).context_click().perform()
 
-        for i in range(8): # コンテキストメニューから物出しロボを選択
+        for i in range(9): # コンテキストメニューから物出しロボを選択
             pyautogui.press('down')
         pyautogui.press('right')
         pyautogui.press('enter')
