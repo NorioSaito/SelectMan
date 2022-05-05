@@ -231,10 +231,14 @@ class CopyAutomatorService():
                         self.wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, 'body > table > tbody > tr:nth-child(3) > td > table > tbody > tr:nth-child(1) > td:nth-child(3) > form.word-b > table:nth-child(26) > tbody > tr > td:nth-child(1) > span')))
 
                         # 物出し処理起動
-                        self.execute_copy()
-                        
-                        # 物出し処理が終わったらブラウザバック
-                        self.driver.back()                        
+                        retry_count = 1
+                        while(retry_count <= 3): # 3 回までリトライ
+                            if not self.execute_copy():
+                                self.output_log_info(f'リトライします。{retry_count}回目'.format(retry_count=retry_count))
+                                retry_count += 1
+                                continue
+                            else:
+                                break                            
 
                     # 画面遷移すると要素が一度消えるため、再取得する
                     results = self.wait.until(EC.visibility_of_all_elements_located((By.CSS_SELECTOR, 'body > table > tbody > tr:nth-child(3) > td > table > tbody > tr:nth-child(1) > td:nth-child(3) > form:nth-child(33) > div.bukkenKensakuKekkaWrapper > table')))
@@ -313,7 +317,7 @@ class CopyAutomatorService():
         if cur_url != self.driver.current_url:
             self.output_log_info('物件詳細から画面が遷移しました。')
             self.driver.back()
-            return
+            return False
 
         # 物出し開始
         try:
@@ -323,7 +327,7 @@ class CopyAutomatorService():
             time.sleep(3)
             pyautogui.press('esc')
             self.output_log_error('物出し処理の起動失敗')
-            return
+            return False
         
         # 物出し処理完了チェック
         try:
@@ -333,5 +337,8 @@ class CopyAutomatorService():
             time.sleep(3)
             pyautogui.press('esc')
             self.output_log_error('物出し処理を完了できませんでした。')
-            return
-        return
+            return False
+
+        # 物出し処理が終わったらブラウザバック
+        self.driver.back()
+        return True
