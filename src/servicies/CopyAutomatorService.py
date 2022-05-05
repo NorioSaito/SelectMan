@@ -328,16 +328,20 @@ class CopyAutomatorService():
             pyautogui.press('esc')
             self.output_log_error('物出し処理の起動失敗')
             return False
-        
-        # 物出し処理完了チェック
+
+        # 登録済の物件だった場合、alert が出る
         try:
-            self.long_wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, '#input-finish-notice')))
-        except Exception as e:
-            # 別ウィンドウが開いていたら閉じるために 3 秒待って Esc キー押下
-            time.sleep(3)
-            pyautogui.press('esc')
-            self.output_log_error('物出し処理を完了できませんでした。')
-            return False
+            alert = self.wait.until(EC.alert_is_present()) # alert があれば、OK ボタン押下
+            alert.accept()
+        except: # alert が出ていなければ完了チェック実施
+            try:
+                self.long_wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, '#input-finish-notice')))
+            except Exception as e:
+                # 別ウィンドウが開いていたら閉じるために 3 秒待って Esc キー押下
+                time.sleep(3)
+                pyautogui.press('esc')
+                self.output_log_error('物出し処理を完了できませんでした。')
+                return False
 
         # 物出し処理が終わったらブラウザバック
         self.driver.back()
