@@ -39,13 +39,30 @@ class MainController:
         self.__window.close()
 
     def execute(self):
-        service = CopyAutomatorService(self.__window, self.__logger)
-        return_code = service.auth_extension()
+        i = 0 # ループカウント（東京都の場合のみインクリメントする）
+        for search_area in constants.SEARCH_AREA_LIST:
+            self.__output(f'{search_area} の物出し処理を開始します。', 'green')
+
+            # 最初はループフラグは True にしておく
+            roop = True
+            while roop:
+                service = CopyAutomatorService(self.__window, self.__logger)
+
+                return_code = service.auth_extension()
+                if return_code != 0:
+                    del service
+                    break
+                
+                self.__output(f'今回の i = {i}', 'blue')
+                roop = service.execute(search_area, i)
+
+                if search_area == '東京都':
+                    i += 1
+            
+            self.__output(f'{search_area} の物出し処理終了。', 'green')
+            del service
         
-        if return_code != 0:
-            return
-        
-        service.execute()
+        return
 
 
     def __output(self, text, color):
