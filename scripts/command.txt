@@ -1,1 +1,1 @@
-pyinstaller .\main.py --noconsole --add-binary --noconfirm "..\driver\chromedriver.exe;./driver" --name 物出し自動化ツール
+pyinstaller .\main.py --noconsole --noconfirm --add-binary "..\driver\chromedriver.exe;./driver" --name 物出し自動化ツール
