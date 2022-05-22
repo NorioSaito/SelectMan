@@ -329,8 +329,16 @@ function registerAtBknData(params, data, ryutsuType, contentResult) {
                 var zIndex = 0;
                 Array.prototype.forEach.call(infoTd.getElementsByTagName('span'), function(element) {
                     if (parseInt(element.style.zIndex, 10) >= parseInt(zIndex, 10)) {
-                        zIndex = element.style.zIndex;
+                        zIndex         = element.style.zIndex;
                         info[headName] = element.textContent;
+                    }
+                });
+            } else if (headName === '物件種目') {
+                Array.prototype.forEach.call(item.parentNode.children, function(element) {
+                    let hasClass = element.classList.contains('display_none');
+                    if (hasClass === false && element.textContent !== '物件種目' && element.textContent !== '物件番号' && element.getAttribute('data-bukkenno') === null) {
+                        info[headName] = element.textContent;
+                        return true;
                     }
                 });
             } else {
@@ -338,7 +346,11 @@ function registerAtBknData(params, data, ryutsuType, contentResult) {
             }
         }
     });
-
+    let kakaku = contentResult.contents.querySelector("input[type='button'][value='データプロ']").getAttribute('onclick').match(/kakaku(.*)tohoJikan/);
+    if (kakaku !== null) {
+        kakaku = kakaku[1].replace(/[^0-9]/g, '');
+        info['賃料'] = Number(kakaku) / 10000;
+    }
     commonDataShopCategoryGroup.forEach(function(item) {
         let ShopCategoryGroupName = item.textContent.replace(/\r?\n?\s+/g, '');
         let infoTd = item.nextElementSibling;

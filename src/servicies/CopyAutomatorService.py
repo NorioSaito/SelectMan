@@ -177,10 +177,20 @@ class CopyAutomatorService():
                 else:
                     next_link.click()
 
+            # バナーを閉じる
+            # 親要素が非表示なので、表示させる
+            # time.sleep(3)
+            # div = self.driver.find_element_by_css_selector('div > div:nth-child(1)')
+            # self.output_log_info(div.value_of_css_property('style'))
+            # self.driver.execute_script("arguments[0].removeAttribute('style')", div)
+            # self.output_log_info(div.value_of_css_property('style'))
+            # bunner_close_button = self.wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'div > div:nth-child(2) > div > div > div > div.ContainerProvider__ContentContainer-sc-rw1hri-0.giSpJK > div > div > span > button')))
+            # bunner_close_button.click()
+
 
             # 検索条件を再設定
             ## 所在地を設定
-            area_setting_button = self.wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'body > table > tbody > tr:nth-child(3) > td > table > tbody > tr:nth-child(1) > td:nth-child(3) > form:nth-child(33) > table.layout-fix > tbody > tr:nth-child(5) > td.common-head > table > tbody > tr > td:nth-child(2) > input[type=button]')))
+            area_setting_button = self.wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'body > table > tbody > tr:nth-child(3) > td > table > tbody > tr:nth-child(1) > td:nth-child(3) > form:nth-child(36) > table.layout-fix > tbody > tr:nth-child(5) > td.common-head > table > tbody > tr > td:nth-child(2) > input[type=button]')))
             area_setting_button.click()
 
             self.switch_last_window()
@@ -229,7 +239,7 @@ class CopyAutomatorService():
 
             self.switch_last_window()
 
-            resetting_btn = self.wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'body > table > tbody > tr:nth-child(3) > td > table > tbody > tr:nth-child(1) > td:nth-child(3) > form:nth-child(33) > table.layout-fix > tbody > tr:nth-child(9) > td > span.flt-rght > input[type=button]:nth-child(1)')))
+            resetting_btn = self.wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'body > table > tbody > tr:nth-child(3) > td > table > tbody > tr:nth-child(1) > td:nth-child(3) > form:nth-child(36) > table.layout-fix > tbody > tr:nth-child(9) > td > span.flt-rght > input[type=button]:nth-child(1)')))
             resetting_btn.click()
 
             # 本日公開にチェック
@@ -240,6 +250,7 @@ class CopyAutomatorService():
             # 再検索
             search_btn = self.wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, '#totalDisplayButton > input:nth-child(1)')))
             search_btn.click()
+
         except TimeoutException as e:
             error_code = 'E301'
             self.output_log_error(constants.ERROR_MSG[error_code])
@@ -263,11 +274,18 @@ class CopyAutomatorService():
             # ページネーション分物件を見ていく
             for i in range(page_all):
                 # 物件のリストを取得
-                results = self.wait.until(EC.visibility_of_all_elements_located((By.CSS_SELECTOR, 'body > table > tbody > tr:nth-child(3) > td > table > tbody > tr:nth-child(1) > td:nth-child(3) > form:nth-child(33) > div.bukkenKensakuKekkaWrapper > table')))
+                ## 検索結果に余計な tr が入るので削除しておく
+                remove_display_none_script = """
+                    elements = document.querySelectorAll("tr.display_none")
+                    elements = Array.from( elements )
+                    elements.forEach(element => element.remove())
+                """
+                self.driver.execute_script(remove_display_none_script)
+                results = self.wait.until(EC.visibility_of_all_elements_located((By.CSS_SELECTOR, 'body > table > tbody > tr:nth-child(3) > td > table > tbody > tr:nth-child(1) > td:nth-child(3) > form:nth-child(36) > div.bukkenKensakuKekkaWrapper > table')))
                 child = 10 # テーブルの子要素のセレクタ
                 for j in range(len(results)):
                     # 画像点数を確認
-                    image_element = self.wait.until(EC.visibility_of_all_elements_located((By.CSS_SELECTOR, 'body > table > tbody > tr:nth-child(3) > td > table > tbody > tr:nth-child(1) > td:nth-child(3) > form:nth-child(33) > div.bukkenKensakuKekkaWrapper > table:nth-child(' + str(child) + ') > tbody > tr:nth-child(2) > td:nth-child(1) > div > div.list-data02-c')))
+                    image_element = self.wait.until(EC.visibility_of_all_elements_located((By.CSS_SELECTOR, 'body > table > tbody > tr:nth-child(3) > td > table > tbody > tr:nth-child(1) > td:nth-child(3) > form:nth-child(36) > div.bukkenKensakuKekkaWrapper > table:nth-child(' + str(child) + ') > tbody > tr:nth-child(2) > td:nth-child(1) > div > div.list-data02-c')))
                     try:
                         image_count = int(re.sub(r"\D", "", image_element[0].text))
                     except ValueError:
@@ -285,17 +303,20 @@ class CopyAutomatorService():
                         self.wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, 'body > table > tbody > tr:nth-child(3) > td > table > tbody > tr:nth-child(1) > td:nth-child(3) > form.word-b > table:nth-child(26) > tbody > tr > td:nth-child(1) > span')))
 
                         # 物出し処理起動
-                        retry_count = 1
-                        while(retry_count <= 3): # 3 回までリトライ
-                            if not self.execute_copy():
-                                self.output_log_info(f'リトライします。{retry_count}回目'.format(retry_count=retry_count))
-                                retry_count += 1
-                                continue
-                            else:
-                                break                            
+                        self.execute_copy()    
+                        # 物出し処理が終わったらブラウザバック
+                        self.output_log_info('戻る')
+                        self.driver.back()                       
 
                     # 画面遷移すると要素が一度消えるため、再取得する
-                    results = self.wait.until(EC.visibility_of_all_elements_located((By.CSS_SELECTOR, 'body > table > tbody > tr:nth-child(3) > td > table > tbody > tr:nth-child(1) > td:nth-child(3) > form:nth-child(33) > div.bukkenKensakuKekkaWrapper > table')))
+                    ## 検索結果に余計な tr が入るので削除しておく
+                    remove_display_none_script = """
+                        elements = document.querySelectorAll("tr.display_none")
+                        elements = Array.from( elements )
+                        elements.forEach(element => element.remove())
+                    """
+                    self.driver.execute_script(remove_display_none_script)
+                    results = self.wait.until(EC.visibility_of_all_elements_located((By.CSS_SELECTOR, 'body > table > tbody > tr:nth-child(3) > td > table > tbody > tr:nth-child(1) > td:nth-child(3) > form:nth-child(36) > div.bukkenKensakuKekkaWrapper > table')))
                     child += 9
 
                 if i < page_all - 1:
@@ -391,15 +412,15 @@ class CopyAutomatorService():
         except: # alert が出ていなければ完了チェック実施
             try:
                 self.long_wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, '#input-finish-notice')))
+                self.output_log_info('物出し終わり')
             except Exception as e:
-                # 別ウィンドウが開いていたら閉じるために 3 秒待って Esc キー押下
+                # 別ウィンドウが開いていたら閉じ
+                # るために 3 秒待って Esc キー押下
                 time.sleep(3)
                 pyautogui.press('esc')
                 self.output_log_error('物出し処理を完了できませんでした。')
                 return False
 
-        # 物出し処理が終わったらブラウザバック
-        self.driver.back()
         return True
 
     

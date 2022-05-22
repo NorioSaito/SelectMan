@@ -53,7 +53,6 @@ class MainController:
                     del service
                     break
                 
-                self.__output(f'今回の i = {i}', 'blue')
                 roop = service.execute(search_area, i)
 
                 if search_area == '東京都':
