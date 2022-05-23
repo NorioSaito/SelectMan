@@ -9,7 +9,6 @@ from selenium.webdriver.common.alert import Alert
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.support.select import Select
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import TimeoutException
@@ -85,7 +84,7 @@ class CopyAutomatorService():
         return 0
 
 
-    def execute(self, search_area, select_count):
+    def execute(self):
         # 物だし処理のループ判定
         self.roop = True
         try:
@@ -189,56 +188,6 @@ class CopyAutomatorService():
 
 
             # 検索条件を再設定
-            ## 所在地を設定
-            area_setting_button = self.wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'body > table > tbody > tr:nth-child(3) > td > table > tbody > tr:nth-child(1) > td:nth-child(3) > form:nth-child(36) > table.layout-fix > tbody > tr:nth-child(5) > td.common-head > table > tbody > tr > td:nth-child(2) > input[type=button]')))
-            area_setting_button.click()
-
-            self.switch_last_window()
-
-            # 都道府県が選択されていた場合、戻るボタン押下
-            try:
-                back_button = self.wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, '#sentaku1ModoruButton')))
-            except Exception as e:
-                pass
-            else:
-                back_button.click()
-            
-            # 都道府県を選択
-            prefecture_select_elem = self.wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, '#zenSentaku1TodofukenCode')))
-            prefecture_select = Select(prefecture_select_elem)
-            prefecture_select.select_by_visible_text(search_area)
-
-            # 選択ボタン押下
-            select_button = self.wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, '#sentaku1SentakuButton')))
-            select_button.click()
-
-            # 市区群選択
-            actions = ActionChains(self.driver)
-
-            city_options = self.wait.until(EC.visibility_of_all_elements_located((By.CSS_SELECTOR, '#zenSentaku1ShozaichiCode1 > option')))
-            if search_area == '東京都': # 東京の場合、10 ずつ選択していく
-                index = select_count * 10
-                for i in range(index, index + 10):
-                    if i <= len(city_options):
-                        actions.click(city_options[i])
-                        actions.key_down(Keys.SHIFT)
-                        
-                        self.roop = True
-                    else: # 最後の所在地までいったら終了
-                        self.roop = False
-            else: # 東京都以外は全選択
-                actions.key_down(Keys.SHIFT)
-                actions.click(city_options[-1])
-                self.roop = False
-
-            actions.perform()
-
-            # 決定ボタン押下
-            diside_button = self.wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, '#sanshuKetteiButton')))
-            diside_button.click()
-
-            self.switch_last_window()
-
             resetting_btn = self.wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'body > table > tbody > tr:nth-child(3) > td > table > tbody > tr:nth-child(1) > td:nth-child(3) > form:nth-child(36) > table.layout-fix > tbody > tr:nth-child(9) > td > span.flt-rght > input[type=button]:nth-child(1)')))
             resetting_btn.click()
 
@@ -256,13 +205,13 @@ class CopyAutomatorService():
             self.output_log_error(constants.ERROR_MSG[error_code])
             self.logout_ATBB()
 
-            return False
+            return error_code
         except Exception as e:
             error_code = 'E999'
             self.output_log_error(constants.ERROR_MSG[error_code])
             self.logout_ATBB()
 
-            return False
+            return error_code
 
 
         try:
@@ -305,7 +254,6 @@ class CopyAutomatorService():
                         # 物出し処理起動
                         self.execute_copy()    
                         # 物出し処理が終わったらブラウザバック
-                        self.output_log_info('戻る')
                         self.driver.back()                       
 
                     # 画面遷移すると要素が一度消えるため、再取得する
@@ -330,18 +278,18 @@ class CopyAutomatorService():
             error_code = 'E302'
             self.output_log_error(constants.ERROR_MSG[error_code])
 
-            return False
+            return error_code
         except Exception as e:
             error_code = 'E999'
             self.output_log_error(constants.ERROR_MSG[error_code])
 
-            return False
+            return error_code
 
         finally:
             self.logout_ATBB()
             pass
 
-        return self.roop
+        return 'SUCCESS'
 
 
     def output_log_info(self, text):
@@ -412,7 +360,6 @@ class CopyAutomatorService():
         except: # alert が出ていなければ完了チェック実施
             try:
                 self.long_wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, '#input-finish-notice')))
-                self.output_log_info('物出し終わり')
             except Exception as e:
                 # 別ウィンドウが開いていたら閉じ
                 # るために 3 秒待って Esc キー押下
@@ -422,8 +369,3 @@ class CopyAutomatorService():
                 return False
 
         return True
-
-    
-    def switch_last_window(self):
-        windows = self.driver.window_handles
-        self.driver.switch_to.window(windows[-1])

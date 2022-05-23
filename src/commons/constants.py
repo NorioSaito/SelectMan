@@ -31,11 +31,3 @@ RANDOM_ELEMENT_BY_LIST = [
     '#chizu_0', # 地図（無料）
     'body > table > tbody > tr:nth-child(3) > td > table > tbody > tr:nth-child(1) > td:nth-child(3) > form:nth-child(33) > div.bukkenKensakuKekkaWrapper > table:nth-child(10) > tbody > tr:nth-child(5) > td:nth-child(2) > a' # 加盟店リンク
 ]
-
-# 検索対象所在地リスト
-SEARCH_AREA_LIST = [
-    '埼玉県',
-    '神奈川県',
-    '千葉県',
-    '東京都'
-]
