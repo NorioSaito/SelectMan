@@ -30,6 +30,22 @@ function exec() {
             alert('物出し可能な物件ページではなかったため、物出しができませんでした。');
             return false;
         }
+        if (ryutsuType === '1') {
+            let priceSibling = document.getElementById('price_img_0');
+            if (priceSibling !== null) {
+                priceSibling  = priceSibling.src;
+                let rentMoney = priceSibling.substr(priceSibling.indexOf('&d=') + 3);
+                let check     = document.querySelector('[data-bukkenno]');
+                if (check !== null) {
+                    check.setAttribute('data-bukkenno', rentMoney);
+                    let bknIdBtn = document.getElementById('bkn_no_copy_btn_0');
+                    if (bknIdBtn !== null) {
+                        bknIdBtn.click();
+                    }
+                }
+            }
+        }
+
         let formData = new FormData();
         formData.append('json', JSON.stringify(loginInfo));
         formData.append('api', loginInfo['at-api']);
@@ -326,30 +342,43 @@ function registerAtBknData(params, data, ryutsuType, contentResult) {
         let infoTd = item.nextElementSibling;
         if (infoTd !== null) {
             if (headName === '賃料' || headName === '価格') {
-                var zIndex = 0;
-                Array.prototype.forEach.call(infoTd.getElementsByTagName('span'), function(element) {
-                    if (parseInt(element.style.zIndex, 10) >= parseInt(zIndex, 10)) {
-                        zIndex         = element.style.zIndex;
-                        info[headName] = element.textContent;
-                    }
+                Array.prototype.forEach.call(infoTd.getElementsByTagName('img'), function(element) {
+                    info['賃料URL'] = element.getAttribute('src');
                 });
-            } else if (headName === '物件種目') {
-                Array.prototype.forEach.call(item.parentNode.children, function(element) {
-                    let hasClass = element.classList.contains('display_none');
-                    if (hasClass === false && element.textContent !== '物件種目' && element.textContent !== '物件番号' && element.getAttribute('data-bukkenno') === null) {
-                        info[headName] = element.textContent;
-                        return true;
+            } else if (headName === '物件種目' && item.parentNode !== null) {
+                let shumokuList = Array.from(item.parentNode.children);
+                let shumokuListLength = shumokuList.length;
+                for (let shumokuNum = 0; shumokuNum < shumokuListLength; shumokuNum++) {
+                    let shumokuElement = shumokuList[shumokuNum];
+                    if (typeof shumokuElement === 'undefined') {
+                        continue;
                     }
-                });
+                    let hasClass = shumokuElement.classList.contains('display_none');
+                    if (hasClass === false &&
+                        shumokuElement.textContent !== '物件種目' &&
+                        shumokuElement.textContent !== '物件番号' &&
+                        shumokuElement.getAttribute('data-bukkenno') === null
+                    ) {
+                        info[headName] = shumokuElement.textContent;
+                        break;
+                    }
+                }
             } else {
                 info[headName] = infoTd.textContent.replace(/\r?\n+/g, '');
             }
         }
     });
-    let kakaku = contentResult.contents.querySelector("input[type='button'][value='データプロ']").getAttribute('onclick').match(/kakaku(.*)tohoJikan/);
-    if (kakaku !== null) {
-        kakaku = kakaku[1].replace(/[^0-9]/g, '');
-        info['賃料'] = Number(kakaku) / 10000;
+    let pasteDiv = contentResult.contents.getElementById('bkn_no_copy_input');
+    if (pasteDiv !== null && pasteDiv.value !== '' && pasteDiv.value.endsWith('万円')) {
+        info['賃料'] = pasteDiv.value;
+        info['価格'] = pasteDiv.value;
+    } else if (contentResult.contents.querySelector("input[type='button'][value='データプロ']") !== null) {
+        let kakaku = contentResult.contents.querySelector("input[type='button'][value='データプロ']").getAttribute('onclick').match(/kakaku(.*)tohoJikan/);
+        if (kakaku !== null) {
+            kakaku = kakaku[1].replace(/[^0-9]/g, '');
+            info['賃料'] = Number(kakaku) / 10000;
+            info['価格'] = Number(kakaku) / 10000;
+        }
     }
     commonDataShopCategoryGroup.forEach(function(item) {
         let ShopCategoryGroupName = item.textContent.replace(/\r?\n?\s+/g, '');
