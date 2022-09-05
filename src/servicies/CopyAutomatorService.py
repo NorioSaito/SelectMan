@@ -135,7 +135,7 @@ class CopyAutomatorService():
             self.output_log_info('ATTB の検索条件設定')
             # 掲載可物件の検索条件を探す
             # ページネーション数を取得
-            page_element = self.wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, 'body > table > tbody > tr:nth-child(3) > td > table > tbody > tr:nth-child(1) > td:nth-child(3) > form:nth-child(66) > table:nth-child(8) > tbody > tr > td:nth-child(1) > span:nth-child(1)')))
+            page_element = self.wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, 'body > table > tbody > tr:nth-child(3) > td > table > tbody > tr:nth-child(1) > td:nth-child(3) > form:nth-child(68) > table:nth-child(8) > tbody > tr > td:nth-child(1) > span:nth-child(1)')))
             page = int(page_element.text)
 
             # 使用する検索条件を設定ファイルから取得
